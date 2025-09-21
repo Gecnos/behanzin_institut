@@ -2,6 +2,10 @@
 require 'database.php';
 
 $query = $_GET['query'] ?? '';
+$lang = $_GET['lang'] ?? 'fr';
+
+$title_field = ($lang === 'en') ? 'titre_en' : 'titre';
+$resume_field = ($lang === 'en') ? 'resume_en' : 'resume';
 
 if (empty($query)) {
     echo '<p>Veuillez entrer un terme de recherche.</p>';
@@ -10,13 +14,13 @@ if (empty($query)) {
 
 try {
     $sql = "
-        SELECT DISTINCT a.id_article, a.titre, a.resume, a.date_publication, aut.nom as auteur_nom
+        SELECT DISTINCT a.id_article, a.{$title_field} AS titre, a.{$resume_field} AS resume, a.date_publication, aut.nom as auteur_nom
         FROM Articles a
         JOIN auteur aut ON a.id_auteur = aut.id_auteur
         LEFT JOIN Liaison_Article_Mot_Cle lamc ON a.id_article = lamc.id_article
         LEFT JOIN Mots_Cles mc ON lamc.id_mot_cle = mc.id_mot_cle
         WHERE a.statut = 'publié'
-        AND (a.titre LIKE :query OR a.resume LIKE :query OR mc.mot_cle LIKE :query OR aut.nom LIKE :query)
+        AND (a.{$title_field} LIKE :query OR a.{$resume_field} LIKE :query OR mc.mot_cle LIKE :query OR aut.nom LIKE :query)
         ORDER BY a.date_publication DESC
     ";
     $stmt = $pdo->prepare($sql);

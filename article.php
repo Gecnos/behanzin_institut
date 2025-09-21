@@ -2,13 +2,18 @@
 require 'php/database.php';
 
 $article_id = $_GET['id'] ?? null;
+$lang = $_GET['lang'] ?? 'fr';
+
+$title_field = ($lang === 'en') ? 'titre_en' : 'titre';
+$resume_field = ($lang === 'en') ? 'resume_en' : 'resume';
+
 if (!$article_id) {
     die('ID manquant.');
 }
 
 try {
     $stmt = $pdo->prepare(
-        "SELECT a.*, aut.nom, aut.prenom
+        "SELECT a.{$title_field} AS titre, a.{$resume_field} AS resume, a.fichier_manuscrit, a.date_publication, aut.nom, aut.prenom
          FROM Articles a
          JOIN auteur aut ON a.id_auteur = aut.id_auteur
          WHERE a.id_article = :id AND a.statut = 'publié'"

@@ -1,19 +1,24 @@
 <?php
 require 'database.php';
 
+$lang = $_GET['lang'] ?? 'fr';
+$title_field = ($lang === 'en') ? 'titre_en' : 'titre';
+$resume_field = ($lang === 'en') ? 'resume_en' : 'resume';
+
 $query_part = "";
 $limit = 20;
 
 if (isset($_GET['latest'])) {
+    $query_part = " AND {$title_field} IS NOT NULL AND {$resume_field} IS NOT NULL";
     $limit = 5;
 } elseif (isset($_GET['featured'])) {
-    $query_part = " AND est_en_avant = 1";
+    $query_part = " AND est_en_avant = 1 AND {$title_field} IS NOT NULL AND {$resume_field} IS NOT NULL";
     $limit = 3;
 }
 
 try {
     $stmt = $pdo->prepare(
-        "SELECT titre, resume, date_publication, id_article 
+        "SELECT id_article, {$title_field} AS titre, {$resume_field} AS resume, date_publication 
          FROM Articles 
          WHERE statut = 'publié' {$query_part}
          ORDER BY date_publication DESC 

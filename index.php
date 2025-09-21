@@ -9,7 +9,7 @@
 </head>
 <body>
     <header>
-        <h1>Behanzin Institut</h1>
+        <h1><a href="#" data-page="accueil">Behanzin Institut</a></h1>
         <nav>
             <a href="#" data-page="accueil" data-lang-key="home"><i class="fa-solid fa-house"></i> </a>
             <a href="#" data-page="publications" data-lang-key="publications"><i class="fa-solid fa-book-open"></i> </a>

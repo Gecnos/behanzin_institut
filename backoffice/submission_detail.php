@@ -64,8 +64,12 @@ try {
 
             <div class="article-details">
                 <div class="form-group">
-                    <label for="titre">Titre</label>
-                    <input type="text" name="titre" id="titre" value="<?= htmlspecialchars($article['titre']) ?>">
+                    <label for="titre">Titre (Français)</label>
+                    <input type="text" name="titre_fr" id="titre_fr" value="<?= htmlspecialchars($article['titre']) ?>">
+                </div>
+                <div class="form-group">
+                    <label for="titre_en">Titre (Anglais)</label>
+                    <input type="text" name="titre_en" id="titre_en" value="<?= htmlspecialchars($article['titre_en']) ?>">
                 </div>
                 
                 <p><strong>Auteur:</strong> <?= htmlspecialchars($article['prenom'] . ' ' . $article['nom']) ?></p>
@@ -73,8 +77,12 @@ try {
                 <label><input type="checkbox" name="est_en_avant" <?= $article['est_en_avant'] ? 'checked' : '' ?>> Mettre en avant</label>
 
                 <div class="form-group">
-                    <label for="resume">Résumé</label>
-                    <textarea name="resume" id="resume" rows="10"><?= htmlspecialchars($article['resume']) ?></textarea>
+                    <label for="resume_fr">Résumé (Français)</label>
+                    <textarea name="resume_fr" id="resume_fr" rows="10"><?= htmlspecialchars($article['resume']) ?></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="resume_en">Résumé (Anglais)</label>
+                    <textarea name="resume_en" id="resume_en" rows="10"><?= htmlspecialchars($article['resume_en']) ?></textarea>
                 </div>
 
                 <div class="form-group">
@@ -145,8 +153,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(mainForm);
         const data = {
             article_id: articleId,
-            titre: formData.get('titre'),
-            resume: formData.get('resume'),
+            titre_fr: formData.get('titre_fr'),
+            titre_en: formData.get('titre_en'),
+            resume_fr: formData.get('resume_fr'),
+            resume_en: formData.get('resume_en'),
             keywords: formData.get('keywords'),
             categories: formData.getAll('categories[]'),
             est_en_avant: formData.has('est_en_avant')

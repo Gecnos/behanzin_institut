@@ -12,8 +12,10 @@ if (!$article_id) {
     exit;
 }
 
-$titre = $data['titre'] ?? '';
-$resume = $data['resume'] ?? '';
+$titre_fr = $data['titre_fr'] ?? '';
+$titre_en = $data['titre_en'] ?? '';
+$resume_fr = $data['resume_fr'] ?? '';
+$resume_en = $data['resume_en'] ?? '';
 $keywords_str = $data['keywords'] ?? '';
 $categories = $data['categories'] ?? [];
 $est_en_avant = !empty($data['est_en_avant']);
@@ -21,8 +23,15 @@ $est_en_avant = !empty($data['est_en_avant']);
 $pdo->beginTransaction();
 try {
     // 1. Mettre à jour les champs principaux
-    $stmt = $pdo->prepare("UPDATE Articles SET titre = :titre, resume = :resume, est_en_avant = :est_en_avant WHERE id_article = :id");
-    $stmt->execute([':titre' => $titre, ':resume' => $resume, ':est_en_avant' => $est_en_avant, ':id' => $article_id]);
+    $stmt = $pdo->prepare("UPDATE Articles SET titre = :titre_fr, resume = :resume_fr, titre_en = :titre_en, resume_en = :resume_en, est_en_avant = :est_en_avant WHERE id_article = :id");
+    $stmt->execute([
+        ':titre_fr' => $titre_fr,
+        ':resume_fr' => $resume_fr,
+        ':titre_en' => $titre_en,
+        ':resume_en' => $resume_en,
+        ':est_en_avant' => $est_en_avant,
+        ':id' => $article_id
+    ]);
 
     // 2. Mettre à jour les mots-clés
     $pdo->prepare("DELETE FROM Liaison_Article_Mot_Cle WHERE id_article = :id")->execute(['id' => $article_id]);

@@ -1,9 +1,13 @@
 <?php
 require 'database.php';
 
+$lang = $_GET['lang'] ?? 'fr';
+$title_field = ($lang === 'en') ? 'titre_en' : 'titre';
+$resume_field = ($lang === 'en') ? 'resume_en' : 'resume';
+
 // 1. Construction de la requête SQL de base
 $sql = "
-    SELECT DISTINCT a.id_article, a.titre, a.resume, a.date_publication, aut.nom as auteur_nom
+    SELECT DISTINCT a.id_article, a.{$title_field} AS titre, a.{$resume_field} AS resume, a.date_publication, aut.nom as auteur_nom
     FROM Articles a
     JOIN auteur aut ON a.id_auteur = aut.id_auteur
     LEFT JOIN Liaison_Article_Categorie lac ON a.id_article = lac.id_article
@@ -58,9 +62,9 @@ try {
         foreach ($articles as $article) {
             echo '<article class="list-item">';
             echo '<h3>' . htmlspecialchars($article['titre']) . '</h3>';
-            echo '<p class="author-date'>Par ' . htmlspecialchars($article['auteur_nom']) . ' - ' . (new DateTime($article['date_publication']))->format('d/m/Y') . '</p>';
+            echo '<p class="author-date">Par ' . htmlspecialchars($article['auteur_nom']) . ' - ' . (new DateTime($article['date_publication']))->format('d/m/Y') . '</p>';
             echo '<p>' . htmlspecialchars($article['resume']) . '</p>';
-            echo '<a href="article.php?id=' . $article['id_article'] . '" class="read-more">Lire la suite</a>';
+            echo '<a href="article.php?id=' . $article['id_article'] . '&lang=' . $lang . '" class="read-more">Lire la suite</a>';
             echo '</article>';
         }
     } else {

@@ -28,11 +28,17 @@ require_role(['administrateur', 'editeur']);
         <form id="content-form">
             <div id="form-response"></div>
 
-            <h3>Page "À Propos"</h3>
-            <textarea name="about_content" id="about_content" rows="15"></textarea>
+            <h3>Page "À Propos" (Français)</h3>
+            <textarea name="about_content_fr" id="about_content_fr" rows="15"></textarea>
 
-            <h3>Page "Contact"</h3>
-            <textarea name="contact_content" id="contact_content" rows="10"></textarea>
+            <h3>Page "À Propos" (Anglais)</h3>
+            <textarea name="about_content_en" id="about_content_en" rows="15"></textarea>
+
+            <h3>Page "Contact" (Français)</h3>
+            <textarea name="contact_content_fr" id="contact_content_fr" rows="10"></textarea>
+
+            <h3>Page "Contact" (Anglais)</h3>
+            <textarea name="contact_content_en" id="contact_content_en" rows="10"></textarea>
 
             <button type="submit">Enregistrer les modifications</button>
         </form>
@@ -40,29 +46,35 @@ require_role(['administrateur', 'editeur']);
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const aboutText = document.getElementById('about_content');
-        const contactText = document.getElementById('contact_content');
-        const form = document.getElementById('content-form');
-        const responseDiv = document.getElementById('form-response');
+        const aboutTextFr = document.getElementById('about_content_fr');
+    const aboutTextEn = document.getElementById('about_content_en');
+    const contactTextFr = document.getElementById('contact_content_fr');
+    const contactTextEn = document.getElementById('contact_content_en');
+    const form = document.getElementById('content-form');
+    const responseDiv = document.getElementById('form-response');
 
-        // Charger le contenu initial
-        fetch('php/fetch_content.php')
-            .then(response => response.json())
-            .then(data => {
-                aboutText.value = data.about_content;
-                contactText.value = data.contact_content;
-            });
+    // Charger le contenu initial
+    fetch('php/fetch_content.php')
+        .then(response => response.json())
+        .then(data => {
+            aboutTextFr.value = data.about_content_fr;
+            aboutTextEn.value = data.about_content_en;
+            contactTextFr.value = data.contact_content_fr;
+            contactTextEn.value = data.contact_content_en;
+        });
 
-        // Gérer la soumission
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            const content = {
-                about_content: formData.get('about_content'),
-                contact_content: formData.get('contact_content')
-            };
+    // Gérer la soumission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const content = {
+            about_content_fr: formData.get('about_content_fr'),
+            about_content_en: formData.get('about_content_en'),
+            contact_content_fr: formData.get('contact_content_fr'),
+            contact_content_en: formData.get('contact_content_en')
+        };
 
-            fetch('php/update_content.php', {
+        fetch('php/update_content.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(content)
