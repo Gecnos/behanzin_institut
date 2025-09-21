@@ -1,0 +1,179 @@
+/* --- Variables & Global Styles --- */
+:root {
+    --primary-font: 'Helvetica', 'Arial', sans-serif;
+    --background-color: #ffffff;
+    --text-color: #1a1a1a;
+    --accent-color: #9B2226; /* Rouge bordeaux */
+    --footer-bg-color: #1a1a1a;
+    --footer-text-color: #ffffff;
+    --light-gray: #f4f4f4;
+}
+
+body {
+    font-family: var(--primary-font);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.6;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+h1, h2, h3, h4 {
+    font-weight: bold;
+}
+
+main {
+    padding: 2rem 5%;
+}
+
+/* --- Header & Navigation --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+header h1 {
+    font-size: 1.8rem;
+    color: var(--accent-color);
+}
+
+header nav a {
+    margin: 0 1rem;
+    font-weight: bold;
+    color: var(--text-color);
+    transition: color 0.2s;
+}
+
+header nav a:hover {
+    color: var(--accent-color);
+}
+
+#lang-selector button {
+    background: none;
+    border: 1px solid var(--text-color);
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+}
+
+/* --- Footer --- */
+footer {
+    background-color: var(--footer-bg-color);
+    color: var(--footer-text-color);
+    padding: 2rem 5%;
+    text-align: center;
+}
+
+/* --- Article Vignettes (Homepage) --- */
+.latest-publications #latest-articles-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.vignette {
+    border: 1px solid var(--light-gray);
+    padding: 1.5rem;
+    transition: box-shadow 0.3s;
+}
+
+.vignette:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.vignette h4 {
+    color: var(--accent-color);
+    font-size: 1.2rem;
+    margin-top: 0;
+}
+
+/* --- Article List (Publications Page) --- */
+#articles-list .list-item {
+    border-bottom: 1px solid var(--light-gray);
+    padding: 1.5rem 0;
+}
+
+#articles-list .list-item:last-child {
+    border-bottom: none;
+}
+
+.list-item h3 {
+    margin-top: 0;
+}
+
+/* --- Forms --- */
+form {
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+input[type="text"], input[type="email"], input[type="tel"], input[type="date"], textarea, select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button[type="submit"], .btn {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover, .btn:hover {
+    background-color: #7c1c1f;
+}
+
+/* --- Backoffice --- */
+#admin-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+}
+
+#admin-content th, #admin-content td {
+    border: 1px solid #ddd;
+    padding: 0.8rem;
+    text-align: left;
+}
+
+#admin-content th {
+    background-color: var(--light-gray);
+}
+
+/* --- Login Page --- */
+#login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#login-form {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    border: 1px solid var(--light-gray);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
