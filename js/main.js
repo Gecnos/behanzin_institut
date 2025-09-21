@@ -22,8 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    function loadPage(page) {
-        fetch(`php/load_page.php?page=${page}`)
+    function loadPage(page, params = '') {
+        let url = `php/load_page.php?page=${page}`;
+        if (params) {
+            url += `&${params}`;
+        }
+        fetch(url)
             .then(response => response.text())
             .then(html => {
                 mainContent.innerHTML = html;
@@ -81,6 +85,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (lang && lang !== currentLang) {
                 loadTranslations(lang);
             }
+        }
+    });
+
+    // Gérer la soumission de la barre de recherche générale
+    document.getElementById('general-search-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const query = this.querySelector('input[name="query"]').value;
+        if (query) {
+            // Charger une page de résultats de recherche via AJAX
+            loadPage('search_results', `query=${encodeURIComponent(query)}`);
         }
     });
 

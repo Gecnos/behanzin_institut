@@ -1,56 +1,47 @@
 <?php
-require 'db_config.php';
+require 'database.php';
 
-// Récupère la requête de l'utilisateur
-$search_query = isset($_GET['query']) ? $_GET['query'] : '';
-$search_query = $conn->real_escape_string($search_query);
+$query = $_GET['query'] ?? '';
 
-if (empty($search_query)) {
-    echo "<p>Veuillez entrer un mot-clé de recherche.</p>";
-    exit();
+if (empty($query)) {
+    echo '<p>Veuillez entrer un terme de recherche.</p>';
+    exit;
 }
 
-// Requête de recherche avancée : cherche dans le titre, le résumé, le nom de l'auteur et les mots-clés
-$sql = "SELECT DISTINCT
-            a.id_article, a.titre, a.resume, a.fichier_manuscrit, a.date_publication,
-            au.nom AS auteur_nom, au.prenom AS auteur_prenom
+try {
+    $sql = "
+        SELECT DISTINCT a.id_article, a.titre, a.resume, a.date_publication, aut.nom as auteur_nom
         FROM Articles a
-        JOIN Auteurs au ON a.id_auteur = au.id_auteur
+        JOIN auteur aut ON a.id_auteur = aut.id_auteur
         LEFT JOIN Liaison_Article_Mot_Cle lamc ON a.id_article = lamc.id_article
         LEFT JOIN Mots_Cles mc ON lamc.id_mot_cle = mc.id_mot_cle
         WHERE a.statut = 'publié'
-          AND (
-               a.titre LIKE '%$search_query%' 
-            OR a.resume LIKE '%$search_query%' 
-            OR au.nom LIKE '%$search_query%' 
-            OR au.prenom LIKE '%$search_query%' 
-            OR mc.mot_cle LIKE '%$search_query%'
-          )
-        ORDER BY a.date_publication DESC";
+        AND (a.titre LIKE :query OR a.resume LIKE :query OR mc.mot_cle LIKE :query OR aut.nom LIKE :query)
+        ORDER BY a.date_publication DESC
+    ";
+    $stmt = $pdo->prepare($sql);
+    $search_param = '%' . $query . '%';
+    $stmt->execute([':query' => $search_param]);
+    $articles = $stmt->fetchAll();
 
-$result = $conn->query($sql);
+    echo '<h2>Résultats de recherche pour "' . htmlspecialchars($query) . '"</h2>';
 
-if ($result->num_rows > 0) {
-    echo "<h3>Résultats de la recherche pour : '{$search_query}'</h3>";
-    echo "<div class='publications-list'>";
-    while($row = $result->fetch_assoc()) {
-        $titre = htmlspecialchars($row['titre']);
-        $resume = htmlspecialchars($row['resume']);
-        $auteur = htmlspecialchars($row['auteur_prenom'] . ' ' . $row['auteur_nom']);
-        $date = date("d/m/Y", strtotime($row['date_publication']));
-        $pdf_link = htmlspecialchars($row['fichier_manuscrit']);
-
-        echo "<div class='article-item'>";
-        echo "<h4><a href='#'>{$titre}</a></h4>";
-        echo "<p>Par {$auteur} - {$date}</p>";
-        echo "<p>{$resume}</p>";
-        echo "<a href='{$pdf_link}' target='_blank' class='btn-download'>Télécharger PDF</a>";
-        echo "</div>";
+    if ($articles) {
+        foreach ($articles as $article) {
+            echo '<article class="list-item">';
+            echo '<h3>' . htmlspecialchars($article['titre']) . '</h3>';
+            echo '<p class="author-date">Par ' . htmlspecialchars($article['auteur_nom']) . ' - ' . (new DateTime($article['date_publication']))->format('d/m/Y') . '</p>';
+            echo '<p>' . htmlspecialchars(substr($article['resume'], 0, 200)) . '...</p>';
+            echo '<a href="article.php?id=' . $article['id_article'] . '" class="read-more">Lire la suite</a>';
+            echo '</article>';
+        }
+    } else {
+        echo '<p>Aucun article ne correspond à votre recherche.</p>';
     }
-    echo "</div>";
-} else {
-    echo "<p>Aucun résultat trouvé pour votre recherche.</p>";
-}
 
-$conn->close();
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo "<p>Erreur lors de la recherche d'articles.</p>";
+    error_log("Erreur search_results: " . $e->getMessage());
+}
 ?>

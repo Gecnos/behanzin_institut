@@ -41,6 +41,12 @@ if (!empty($_GET['date-to'])) {
     $params[':date_to'] = $_GET['date-to'] . ' 23:59:59';
 }
 
+// Ajout du filtre de recherche générale
+if (!empty($_GET['query'])) {
+    $sql .= " AND (a.titre LIKE :general_query OR a.resume LIKE :general_query OR mc.mot_cle LIKE :general_query OR aut.nom LIKE :general_query)";
+    $params[':general_query'] = '%' . $_GET['query'] . '%';
+}
+
 $sql .= " ORDER BY a.date_publication DESC";
 
 try {

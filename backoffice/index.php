@@ -15,10 +15,12 @@ require_role(['administrateur', 'editeur', 'relecteur']);
     <header>
         <h1>Back-Office</h1>
         <nav>
-            <a href="index.php">Soumissions</a>
-            <a href="stats.php">Statistiques</a>
-            <a href="../index.php" target="_blank">Voir le site</a>
-            <a href="../php/logout.php">Déconnexion</a>
+            <a href="index.php"><i class="fa-solid fa-inbox"></i> Soumissions</a>
+            <a href="stats.php"><i class="fa-solid fa-chart-line"></i> Statistiques</a>
+            <a href="users.php"><i class="fa-solid fa-users"></i> Utilisateurs</a>
+            <a href="content.php"><i class="fa-solid fa-file-pen"></i> Contenu</a>
+            <a href="../index.php" target="_blank"><i class="fa-solid fa-globe"></i> Voir le site</a>
+            <a href="../php/logout.php"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
         </nav>
     </header>
 

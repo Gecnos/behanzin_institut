@@ -50,7 +50,7 @@
             <input type="file" id="manuscript" name="manuscript" accept=".pdf,.doc,.docx" required>
         </div>
 
-        <button type="submit" id="submit-btn">Soumettre</button>
+        <button type="submit" id="submit-btn"><i class="fa-solid fa-paper-plane"></i> Soumettre</button>
     </form>
 </section>
 

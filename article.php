@@ -50,7 +50,7 @@ try {
             <p><?= nl2br(htmlspecialchars($article['resume'])) ?></p>
 
             <h3>Article Complet</h3>
-            <a href="download.php?id=<?= $article['id_article'] ?>" class="btn">Télécharger le PDF</a>
+            <a href="download.php?id=<?= $article['id_article'] ?>" class="btn"><i class="fa-solid fa-download"></i> Télécharger le PDF</a>
             
             <!-- On pourrait aussi intégrer un viewer PDF ici -->
 

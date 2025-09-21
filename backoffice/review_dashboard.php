@@ -20,12 +20,13 @@ $assigned_articles = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <title>Tableau de Bord Relecteur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <header>
         <h1>Tableau de Bord Relecteur</h1>
-        <nav><a href="../php/logout.php">Déconnexion</a></nav>
+        <nav><a href="../php/logout.php"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a></nav>
     </header>
 
     <main id="admin-content">

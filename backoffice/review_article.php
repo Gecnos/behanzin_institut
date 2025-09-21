@@ -28,12 +28,13 @@ $article = $stmt->fetch();
 <head>
     <meta charset="UTF-8">
     <title>Relecture d'article</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <header>
         <h1>Relecture : <?= htmlspecialchars($article['titre']) ?></h1>
-        <nav><a href="review_dashboard.php">&larr; Retour</a></nav>
+        <nav><a href="review_dashboard.php"><i class="fa-solid fa-arrow-left"></i> Retour</a></nav>
     </header>
 
     <main id="admin-content">

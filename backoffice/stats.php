@@ -8,6 +8,7 @@ require_role(['administrateur', 'editeur']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistiques - Back-Office</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -15,9 +16,12 @@ require_role(['administrateur', 'editeur']);
     <header>
         <h1>Back-Office</h1>
         <nav>
-            <a href="index.php">Soumissions</a>
-            <a href="stats.php">Statistiques</a>
-            <a href="../index.php" target="_blank">Voir le site</a>
+            <a href="index.php"><i class="fa-solid fa-inbox"></i> Soumissions</a>
+            <a href="stats.php"><i class="fa-solid fa-chart-line"></i> Statistiques</a>
+            <a href="users.php"><i class="fa-solid fa-users"></i> Utilisateurs</a>
+            <a href="content.php"><i class="fa-solid fa-file-pen"></i> Contenu</a>
+            <a href="../index.php" target="_blank"><i class="fa-solid fa-globe"></i> Voir le site</a>
+            <a href="../php/logout.php"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
         </nav>
     </header>
 
@@ -26,19 +30,19 @@ require_role(['administrateur', 'editeur']);
 
         <div class="stats-container">
             <div class="stat-card">
-                <h3>Soumis</h3>
+                <h3><i class="fa-solid fa-hourglass-half"></i> Soumis</h3>
                 <p id="count-submitted">0</p>
             </div>
             <div class="stat-card">
-                <h3>Acceptés</h3>
+                <h3><i class="fa-solid fa-check-circle"></i> Acceptés</h3>
                 <p id="count-accepted">0</p>
             </div>
             <div class="stat-card">
-                <h3>Publiés</h3>
+                <h3><i class="fa-solid fa-globe"></i> Publiés</h3>
                 <p id="count-published">0</p>
             </div>
             <div class="stat-card">
-                <h3>Refusés</h3>
+                <h3><i class="fa-solid fa-times-circle"></i> Refusés</h3>
                 <p id="count-refused">0</p>
             </div>
         </div>

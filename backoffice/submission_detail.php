@@ -48,12 +48,13 @@ try {
 <head>
     <meta charset="UTF-8">
     <title>Détail de la soumission - <?= htmlspecialchars($article['titre']) ?></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <header>
         <h1>Détail de la soumission</h1>
-        <nav><a href="index.php">&larr; Retour aux soumissions</a></nav>
+        <nav><a href="index.php"><i class="fa-solid fa-arrow-left"></i> Retour aux soumissions</a></nav>
     </header>
 
     <main id="admin-content">
@@ -96,50 +97,23 @@ try {
                     <?php endforeach; ?>
                 </div>
 
-                <button type="submit">Enregistrer les modifications</button>
+                <button type="submit"><i class="fa-solid fa-save"></i> Enregistrer les modifications</button>
                 <hr>
 
                 <h3>Actions Éditoriales</h3>
                 <div id="decision-form">
-                    <button type="button" class="btn-action" data-action="accepté">Accepter</button>
-                    <button type="button" class="btn-action" data-action="refusé">Refuser</button>
+                    <button type="button" class="btn-action" data-action="accepté"><i class="fa-solid fa-check"></i> Accepter</button>
+                    <button type="button" class="btn-action" data-action="refusé"><i class="fa-solid fa-times"></i> Refuser</button>
                 </div>
                 
                 <hr>
-
-                <hr>
-
-                <h3>Avis des Relecteurs</h3>
-                <div id="reviews-list">
-                    <?php
-                    $stmt_reviews = $pdo->prepare(
-                        "SELECT cr.commentaire, cr.recommandation, u.nom, u.prenom 
-                         FROM Commentaires_Relecture cr 
-                         JOIN Utilisateurs u ON cr.id_relecteur = u.id_utilisateur 
-                         WHERE cr.id_article = :id AND cr.commentaire IS NOT NULL"
-                    );
-                    $stmt_reviews->execute(['id' => $article_id]);
-                    $reviews = $stmt_reviews->fetchAll();
-                    if (empty($reviews)) {
-                        echo "<p>Aucun avis de relecteur soumis pour le moment.</p>";
-                    } else {
-                        foreach ($reviews as $review) {
-                            echo '<div class="review-item">';
-                            echo '<strong>Relecteur: ' . htmlspecialchars($review['prenom'] . ' ' . $review['nom']) . '</strong>';
-                            echo '<p><strong>Recommandation:</strong> ' . htmlspecialchars($review['recommandation']) . '</p>';
-                            echo '<p>' . nl2br(htmlspecialchars($review['commentaire'])) . '</p>';
-                            echo '</div>';
-                        }
-                    }
-                    ?>
-                </div>
 
                 <h3>Assigner à un relecteur</h3>
                 <div id="assign-form">
                     <select name="reviewer_id" required>
                         <!-- Les relecteurs seront chargés ici -->
                     </select>
-                    <button type="button" id="assign-btn">Assigner</button>
+                    <button type="button" id="assign-btn"><i class="fa-solid fa-user-plus"></i> Assigner</button>
                 </div>
             </div>
         </form>

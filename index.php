@@ -11,12 +11,16 @@
     <header>
         <h1>Behanzin Institut</h1>
         <nav>
-            <a href="#" data-page="accueil" data-lang-key="home"></a>
-            <a href="#" data-page="publications" data-lang-key="publications"></a>
-            <a href="#" data-page="a-propos" data-lang-key="about"></a>
-            <a href="#" data-page="contact" data-lang-key="contact"></a>
-            <a href="#" data-page="soumettre" data-lang-key="submit"></a>
+            <a href="#" data-page="accueil" data-lang-key="home"><i class="fa-solid fa-house"></i> </a>
+            <a href="#" data-page="publications" data-lang-key="publications"><i class="fa-solid fa-book-open"></i> </a>
+            <a href="#" data-page="a-propos" data-lang-key="about"><i class="fa-solid fa-circle-info"></i> </a>
+            <a href="#" data-page="contact" data-lang-key="contact"><i class="fa-solid fa-envelope"></i> </a>
+            <a href="#" data-page="soumettre" data-lang-key="submit"><i class="fa-solid fa-file-arrow-up"></i> </a>
         </nav>
+        <form id="general-search-form" class="header-search">
+            <input type="search" name="query" placeholder="Rechercher un article..." aria-label="Rechercher">
+            <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
         <div id="lang-selector">
             <button data-lang="fr">FR</button>
             <button data-lang="en">EN</button>

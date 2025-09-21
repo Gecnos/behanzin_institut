@@ -7,7 +7,8 @@ $allowed_pages = [
     'publications' => '../includes/publications_content.php',
     'a-propos' => '../includes/about_content.php',
     'contact' => '../includes/contact_content.php',
-    'soumettre' => '../includes/submit_content.php'
+    'soumettre' => '../includes/submit_content.php',
+    'search_results' => '../php/search_results.php'
 ];
 
 if (array_key_exists($page, $allowed_pages)) {
