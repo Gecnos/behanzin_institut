@@ -17,10 +17,7 @@
             <a href="#" data-page="contact" data-lang-key="contact"><i class="fa-solid fa-envelope"></i> </a>
             <a href="#" data-page="soumettre" data-lang-key="submit"><i class="fa-solid fa-file-arrow-up"></i> </a>
         </nav>
-        <form id="general-search-form" class="header-search">
-            <input type="search" name="query" placeholder="Rechercher un article..." aria-label="Rechercher">
-            <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
-        </form>
+    
         <div id="lang-selector">
             <button data-lang="fr">FR</button>
             <button data-lang="en">EN</button>

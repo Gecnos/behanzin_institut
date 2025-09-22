@@ -2,9 +2,9 @@
 require 'auth_check.php';
 require_role(['administrateur', 'editeur']);
 
-$article_id = $_GET['id'] ?? null;
+$article_id = isset($_GET['id']) ? $_GET['id'] : null;
 if (!$article_id) {
-    die('ID de l'article manquant.');
+    die("ID de l'article manquant.");
 }
 
 try {

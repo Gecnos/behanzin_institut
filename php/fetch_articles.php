@@ -20,7 +20,7 @@ try {
     $stmt = $pdo->prepare(
         "SELECT id_article, {$title_field} AS titre, {$resume_field} AS resume, date_publication 
          FROM Articles 
-         WHERE statut = 'publié' {$query_part}
+         WHERE statut = 'accepté' {$query_part}
          ORDER BY date_publication DESC 
          LIMIT :limit"
     );
@@ -34,7 +34,9 @@ try {
             echo '<article class="vignette">';
             echo '<h4>' . htmlspecialchars($article['titre']) . '</h4>';
             echo '<p>' . htmlspecialchars(substr($article['resume'], 0, 150)) . '...</p>';
-            echo '<span class="date-pub">'. (new DateTime($article['date_publication']))->format('d/m/Y') .'</span>';
+            if ($article['date_publication']) {
+                echo '<span class="date-pub">'. (new DateTime($article['date_publication']))->format('d/m/Y') .'</span>';
+            }
             echo '<br><a href="article.php?id=' . $article['id_article'] . '">Lire la suite</a>';
             echo '</article>';
         }

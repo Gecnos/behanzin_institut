@@ -12,10 +12,10 @@ if (!$article_id) {
     exit;
 }
 
-$titre_fr = $data['titre_fr'] ?? '';
-$titre_en = $data['titre_en'] ?? '';
-$resume_fr = $data['resume_fr'] ?? '';
-$resume_en = $data['resume_en'] ?? '';
+$titre_fr = htmlspecialchars_decode($data['titre_fr'] ?? '', ENT_QUOTES);
+$titre_en = htmlspecialchars_decode($data['titre_en'] ?? '', ENT_QUOTES);
+$resume_fr = htmlspecialchars_decode($data['resume_fr'] ?? '', ENT_QUOTES);
+$resume_en = htmlspecialchars_decode($data['resume_en'] ?? '', ENT_QUOTES);
 $keywords_str = $data['keywords'] ?? '';
 $categories = $data['categories'] ?? [];
 $est_en_avant = !empty($data['est_en_avant']);

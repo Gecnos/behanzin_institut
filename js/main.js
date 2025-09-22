@@ -171,6 +171,40 @@ document.addEventListener('DOMContentLoaded', function() {
             const query = new URLSearchParams(formData).toString();
             fetchFilteredArticles(query);
         }
+        // Soumission du formulaire de soumission d'article
+        else if (e.target.id === 'submission-form') {
+            e.preventDefault();
+            const form = e.target;
+            const responseDiv = document.getElementById('form-response');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Envoi en cours...';
+
+            const formData = new FormData(form);
+
+            fetch('php/handle_submission.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                responseDiv.className = data.success ? 'response success' : 'response error';
+                responseDiv.textContent = data.message;
+                if (data.success) {
+                    form.reset();
+                }
+            })
+            .catch(error => {
+                responseDiv.className = 'response error';
+                responseDiv.textContent = 'Une erreur technique est survenue. Veuillez réessayer.';
+                console.error('Erreur de soumission:', error);
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Soumettre';
+            });
+        }
     });
 
     // Inputs (pour la recherche en temps réel)

@@ -2,7 +2,7 @@
     <h2>Soumettre un article</h2>
     <p>Veuillez remplir le formulaire ci-dessous pour soumettre votre manuscrit. Tous les champs sont obligatoires.</p>
 
-    <form id="submission-form" enctype="multipart/form-data">
+    <form id="submission-form" enctype="multipart/form-data" method="POST">
         <div id="form-response"></div>
 
         <div class="form-group">
@@ -53,41 +53,3 @@
         <button type="submit" id="submit-btn"><i class="fa-solid fa-paper-plane"></i> Soumettre</button>
     </form>
 </section>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('submission-form');
-    const responseDiv = document.getElementById('form-response');
-    const submitBtn = document.getElementById('submit-btn');
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Envoi en cours...';
-
-        const formData = new FormData(form);
-
-        fetch('php/handle_submission.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            responseDiv.className = data.success ? 'response success' : 'response error';
-            responseDiv.textContent = data.message;
-            if (data.success) {
-                form.reset();
-            }
-        })
-        .catch(error => {
-            responseDiv.className = 'response error';
-            responseDiv.textContent = 'Une erreur technique est survenue. Veuillez réessayer.';
-            console.error('Erreur de soumission:', error);
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Soumettre';
-        });
-    });
-});
-</script>

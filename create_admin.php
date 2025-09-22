@@ -3,7 +3,7 @@ require 'php/database.php';
 
 echo "<pre>";
 
-$email = 'admin@test.com';
+$email = 'relecteur@test.com';
 $password = 'password123';
 
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -12,7 +12,7 @@ try {
     $stmt = $pdo->prepare(
         "INSERT INTO Utilisateurs (nom, prenom, email, mot_de_passe, role) VALUES (?, ?, ?, ?, ?)"
     );
-    $stmt->execute(['Admin', 'Super', $email, $hashed_password, 'administrateur']);
+    $stmt->execute(['Relecteur', 'Super', $email, $hashed_password, 'relecteur']);
 
     echo "Utilisateur administrateur créé avec succès !\n";
     echo "Email: {$email}\n";

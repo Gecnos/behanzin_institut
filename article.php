@@ -13,10 +13,10 @@ if (!$article_id) {
 
 try {
     $stmt = $pdo->prepare(
-        "SELECT a.{$title_field} AS titre, a.{$resume_field} AS resume, a.fichier_manuscrit, a.date_publication, aut.nom, aut.prenom
+        "SELECT a.id_article, a.{$title_field} AS titre, a.{$resume_field} AS resume, a.fichier_manuscrit, a.date_publication, aut.nom, aut.prenom
          FROM Articles a
          JOIN auteur aut ON a.id_auteur = aut.id_auteur
-         WHERE a.id_article = :id AND a.statut = 'publié'"
+         WHERE a.id_article = :id AND a.statut = 'accepté'"
     );
     $stmt->execute(['id' => $article_id]);
     $article = $stmt->fetch();
@@ -49,7 +49,7 @@ try {
     <main>
         <article class="full-article">
             <h2><?= htmlspecialchars($article['titre']) ?></h2>
-            <p class="author-date">Par <?= htmlspecialchars($article['prenom'] . ' ' . $article['nom']) ?> | Publié le <?= (new DateTime($article['date_publication']))->format('d/m/Y') ?></p>
+            <p class="author-date">Par <?= htmlspecialchars($article['prenom'] . ' ' . $article['nom']) ?><?php if ($article['date_publication']): ?> | Publié le <?= (new DateTime($article['date_publication']))->format('d/m/Y') ?><?php endif; ?></p>
             
             <h3>Résumé</h3>
             <p><?= nl2br(htmlspecialchars($article['resume'])) ?></p>
