@@ -11,14 +11,15 @@ require_role(['administrateur']);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
-    <header>
+<body class="backoffice-body">
+    <header class="backoffice-header">
         <h1>Back-Office</h1>
         <nav>
             <a href="index.php"><i class="fa-solid fa-inbox"></i> Soumissions</a>
             <a href="stats.php"><i class="fa-solid fa-chart-line"></i> Statistiques</a>
             <a href="users.php"><i class="fa-solid fa-users"></i> Utilisateurs</a>
             <a href="content.php"><i class="fa-solid fa-file-pen"></i> Contenu</a>
+            <a href="categories.php"><i class="fa-solid fa-tags"></i> Catégories</a>
             <a href="../index.php" target="_blank"><i class="fa-solid fa-globe"></i> Voir le site</a>
             <a href="../php/logout.php"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
         </nav>

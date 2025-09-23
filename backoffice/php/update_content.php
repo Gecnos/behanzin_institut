@@ -1,34 +1,52 @@
 <?php
-header('Content-Type: application/json');
+require '../auth_check.php';
+require_role(['administrateur', 'editeur']);
 
-// TODO: Session check (admin or editor)
+header('Content-Type: application/json');
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-$about_content_fr = $data['about_content_fr'] ?? null;
-$contact_content_fr = $data['contact_content_fr'] ?? null;
-$about_content_en = $data['about_content_en'] ?? null;
-$contact_content_en = $data['contact_content_en'] ?? null;
-
-if ($about_content_fr === null || $contact_content_fr === null || $about_content_en === null || $contact_content_en === null) {
+if (empty($data)) {
     echo json_encode(['success' => false, 'message' => 'Données manquantes.']);
     exit;
 }
 
-$about_path_fr = '../../includes/about_content.php';
-$contact_path_fr = '../../includes/contact_content.php';
-$about_path_en = '../../includes/about_content_en.php';
-$contact_path_en = '../../includes/contact_content_en.php';
+// The content keys we expect from the frontend
+$content_keys = [
+    'about_content_fr',
+    'about_content_en'
+];
 
-// Utiliser LOCK_EX pour éviter les écritures concurrentes
-$about_result_fr = file_put_contents($about_path_fr, $about_content_fr, LOCK_EX);
-$contact_result_fr = file_put_contents($contact_path_fr, $contact_content_fr, LOCK_EX);
-$about_result_en = file_put_contents($about_path_en, $about_content_en, LOCK_EX);
-$contact_result_en = file_put_contents($contact_path_en, $contact_content_en, LOCK_EX);
+try {
+    $pdo->beginTransaction();
 
-if ($about_result_fr !== false && $contact_result_fr !== false && $about_result_en !== false && $contact_result_en !== false) {
+    // Using INSERT ... ON DUPLICATE KEY UPDATE is efficient.
+    // It requires a PRIMARY or UNIQUE key on the 'cle' column.
+    $stmt = $pdo->prepare(
+        "INSERT INTO ContenuStatique (cle, valeur) 
+         VALUES (:cle, :valeur) 
+         ON DUPLICATE KEY UPDATE valeur = :valeur"
+    );
+
+    foreach ($content_keys as $key) {
+        if (isset($data[$key])) {
+            // The key in the DB will be 'about_fr', 'contact_en', etc.
+            $db_key = str_replace(['_content_', '_'], ['', ''], $key);
+            
+            $stmt->execute([
+                ':cle' => $db_key,
+                ':valeur' => $data[$key]
+            ]);
+        }
+    }
+
+    $pdo->commit();
     echo json_encode(['success' => true, 'message' => 'Contenu mis à jour avec succès.']);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Une erreur est survenue lors de l\'écriture d\'un des fichiers.']);
+
+} catch (PDOException $e) {
+    $pdo->rollBack();
+    http_response_code(500);
+    error_log("Erreur update_content: " . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Erreur de base de données.']);
 }
 ?>

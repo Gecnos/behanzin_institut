@@ -14,7 +14,7 @@ $sql = "
     LEFT JOIN categories cat ON lac.id_categorie = cat.id_categorie
     LEFT JOIN Liaison_Article_Mot_Cle lamc ON a.id_article = lamc.id_article
     LEFT JOIN Mots_Cles mc ON lamc.id_mot_cle = mc.id_mot_cle
-    WHERE a.statut = 'publié'
+    WHERE a.statut IN ('publié', 'accepté')
 ";
 
 $params = [];
@@ -26,12 +26,12 @@ if (!empty($_GET['category'])) {
 }
 
 if (!empty($_GET['author'])) {
-    $sql .= " AND aut.nom LIKE :author";
+    $sql .= " AND LOWER(aut.nom) LIKE LOWER(:author)";
     $params[':author'] = '%' . $_GET['author'] . '%';
 }
 
 if (!empty($_GET['keywords'])) {
-    $sql .= " AND (a.titre LIKE :keywords OR a.resume LIKE :keywords OR mc.mot_cle LIKE :keywords)";
+    $sql .= " AND (LOWER(a.{$title_field}) LIKE LOWER(:keywords) OR LOWER(a.{$resume_field}) LIKE LOWER(:keywords) OR LOWER(mc.mot_cle) LIKE LOWER(:keywords))";
     $params[':keywords'] = '%' . $_GET['keywords'] . '%';
 }
 
@@ -47,7 +47,7 @@ if (!empty($_GET['date-to'])) {
 
 // Ajout du filtre de recherche générale
 if (!empty($_GET['query'])) {
-    $sql .= " AND (a.titre LIKE :general_query OR a.resume LIKE :general_query OR mc.mot_cle LIKE :general_query OR aut.nom LIKE :general_query)";
+    $sql .= " AND (LOWER(a.{$title_field}) LIKE LOWER(:general_query) OR LOWER(a.{$resume_field}) LIKE LOWER(:general_query) OR LOWER(mc.mot_cle) LIKE LOWER(:general_query) OR LOWER(aut.nom) LIKE LOWER(:general_query))";
     $params[':general_query'] = '%' . $_GET['query'] . '%';
 }
 
@@ -62,7 +62,11 @@ try {
         foreach ($articles as $article) {
             echo '<article class="list-item">';
             echo '<h3>' . htmlspecialchars($article['titre']) . '</h3>';
-            echo '<p class="author-date">Par ' . htmlspecialchars($article['auteur_nom']) . ' - ' . (new DateTime($article['date_publication']))->format('d/m/Y') . '</p>';
+            echo '<p class="author-date">Par ' . htmlspecialchars($article['auteur_nom']);
+            if ($article['date_publication']) {
+                echo ' - ' . (new DateTime($article['date_publication']))->format('d/m/Y');
+            }
+            echo '</p>';
             echo '<p>' . htmlspecialchars($article['resume']) . '</p>';
             echo '<a href="article.php?id=' . $article['id_article'] . '&lang=' . $lang . '" class="read-more">Lire la suite</a>';
             echo '</article>';

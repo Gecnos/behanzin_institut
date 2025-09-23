@@ -14,13 +14,25 @@ if (!$stmt->fetch() && $_SESSION['user_role'] !== 'administrateur') {
 
 // Récupérer les détails de l'article et le commentaire existant
 $stmt = $pdo->prepare(
-    "SELECT a.titre, a.resume, a.fichier_manuscrit, cr.commentaire, cr.recommandation
+    "SELECT a.titre, a.resume, a.fichier_manuscrit, a.image, cr.commentaire, cr.recommandation
      FROM Articles a
      JOIN Commentaires_Relecture cr ON a.id_article = cr.id_article
      WHERE a.id_article = :id AND cr.id_relecteur = :user_id"
 );
 $stmt->execute(['id' => $article_id, 'user_id' => $_SESSION['user_id']]);
 $article = $stmt->fetch();
+
+?>
+    $stmt->execute(['id' => $article_id, 'user_id' => $_SESSION['user_id']]);
+    $article = $stmt->fetch();
+
+    // Récupérer les catégories de l'article
+    $stmt_cat = $pdo->prepare("SELECT id_categorie FROM Liaison_Article_Categorie WHERE id_article = :id");
+    $stmt_cat->execute(['id' => $article_id]);
+    $article_categories = $stmt_cat->fetchAll(PDO::FETCH_COLUMN, 0);
+
+    // Récupérer toutes les catégories disponibles
+    $all_categories = $pdo->query("SELECT id_categorie, nom FROM categories ORDER BY nom")->fetchAll();
 
 ?>
 <!DOCTYPE html>
@@ -31,15 +43,22 @@ $article = $stmt->fetch();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
-    <header>
+<body class="backoffice-body">
+    <header class="backoffice-header">
         <h1>Relecture : <?= htmlspecialchars($article['titre']) ?></h1>
-        <nav><a href="review_dashboard.php"><i class="fa-solid fa-arrow-left"></i> Retour</a></nav>
+        <nav>
+            <a href="review_dashboard.php"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+            <a href="categories.php"><i class="fa-solid fa-tags"></i> Catégories</a>
+        </nav>
     </header>
 
     <main id="admin-content">
         <h3>Résumé</h3>
         <p><?= nl2br(htmlspecialchars($article['resume'])) ?></p>
+        <?php if ($article['image']): ?>
+            <h3>Image de l'article</h3>
+            <img src="../<?= htmlspecialchars($article['image']) ?>" alt="Image de l'article" style="max-width: 400px; height: auto;">
+        <?php endif; ?>
         <p><a href="../<?= htmlspecialchars($article['fichier_manuscrit']) ?>" download class="btn">Télécharger le manuscrit</a></p>
         <hr>
 
@@ -64,6 +83,16 @@ $article = $stmt->fetch();
                 <textarea name="commentaire" id="commentaire" rows="15" required><?= htmlspecialchars($article['commentaire']) ?></textarea>
             </div>
 
+            <h3>Catégories</h3>
+            <div class="form-group-checkbox">
+                <?php foreach ($all_categories as $category): ?>
+                    <label>
+                        <input type="checkbox" name="categories[]" value="<?= $category['id_categorie'] ?>" <?= in_array($category['id_categorie'], $article_categories) ? 'checked' : '' ?>>
+                        <?= htmlspecialchars($category['nom']) ?>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+
             <button type="submit">Soumettre la relecture</button>
         </form>
     </main>
@@ -72,7 +101,12 @@ $article = $stmt->fetch();
     document.getElementById('review-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
-        const data = Object.fromEntries(formData.entries());
+        const data = {
+            article_id: articleId,
+            recommandation: formData.get('recommandation'),
+            commentaire: formData.get('commentaire'),
+            categories: formData.getAll('categories[]')
+        };
 
         fetch('php/submit_review.php', {
             method: 'POST',

@@ -4,6 +4,7 @@
     <div class="search-filter-container">
         <div class="simple-search">
             <input type="text" id="publications-search-input" placeholder="Rechercher dans les publications...">
+            <button id="simple-search-button" class="btn"><i class="fa-solid fa-magnifying-glass"></i> Rechercher</button>
             <button id="toggle-advanced-filters"><i class="fa-solid fa-filter"></i> Filtres Avancés</button>
         </div>
 

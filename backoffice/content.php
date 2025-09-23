@@ -10,14 +10,15 @@ require_role(['administrateur', 'editeur']);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
-    <header>
+<body class="backoffice-body">
+    <header class="backoffice-header">
         <h1>Back-Office</h1>
         <nav>
             <a href="index.php"><i class="fa-solid fa-inbox"></i> Soumissions</a>
             <a href="stats.php"><i class="fa-solid fa-chart-line"></i> Statistiques</a>
             <a href="users.php"><i class="fa-solid fa-users"></i> Utilisateurs</a>
             <a href="content.php"><i class="fa-solid fa-file-pen"></i> Contenu</a>
+            <a href="categories.php"><i class="fa-solid fa-tags"></i> Catégories</a>
             <a href="../index.php" target="_blank"><i class="fa-solid fa-globe"></i> Voir le site</a>
             <a href="../php/logout.php"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
         </nav>
@@ -29,16 +30,14 @@ require_role(['administrateur', 'editeur']);
             <div id="form-response"></div>
 
             <h3>Page "À Propos" (Français)</h3>
-            <textarea name="about_content_fr" id="about_content_fr" rows="15"></textarea>
+            <div class="form-group">
+                <textarea name="about_content_fr" id="about_content_fr" rows="15"></textarea>
+            </div>
 
             <h3>Page "À Propos" (Anglais)</h3>
-            <textarea name="about_content_en" id="about_content_en" rows="15"></textarea>
-
-            <h3>Page "Contact" (Français)</h3>
-            <textarea name="contact_content_fr" id="contact_content_fr" rows="10"></textarea>
-
-            <h3>Page "Contact" (Anglais)</h3>
-            <textarea name="contact_content_en" id="contact_content_en" rows="10"></textarea>
+            <div class="form-group">
+                <textarea name="about_content_en" id="about_content_en" rows="15"></textarea>
+            </div>
 
             <button type="submit">Enregistrer les modifications</button>
         </form>
@@ -48,8 +47,6 @@ require_role(['administrateur', 'editeur']);
     document.addEventListener('DOMContentLoaded', function() {
         const aboutTextFr = document.getElementById('about_content_fr');
     const aboutTextEn = document.getElementById('about_content_en');
-    const contactTextFr = document.getElementById('contact_content_fr');
-    const contactTextEn = document.getElementById('contact_content_en');
     const form = document.getElementById('content-form');
     const responseDiv = document.getElementById('form-response');
 
@@ -59,8 +56,6 @@ require_role(['administrateur', 'editeur']);
         .then(data => {
             aboutTextFr.value = data.about_content_fr;
             aboutTextEn.value = data.about_content_en;
-            contactTextFr.value = data.contact_content_fr;
-            contactTextEn.value = data.contact_content_en;
         });
 
     // Gérer la soumission
@@ -69,9 +64,7 @@ require_role(['administrateur', 'editeur']);
         const formData = new FormData(form);
         const content = {
             about_content_fr: formData.get('about_content_fr'),
-            about_content_en: formData.get('about_content_en'),
-            contact_content_fr: formData.get('contact_content_fr'),
-            contact_content_en: formData.get('contact_content_en')
+            about_content_en: formData.get('about_content_en')
         };
 
         fetch('php/update_content.php', {

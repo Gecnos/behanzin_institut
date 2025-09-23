@@ -19,8 +19,8 @@ try {
         JOIN auteur aut ON a.id_auteur = aut.id_auteur
         LEFT JOIN Liaison_Article_Mot_Cle lamc ON a.id_article = lamc.id_article
         LEFT JOIN Mots_Cles mc ON lamc.id_mot_cle = mc.id_mot_cle
-        WHERE a.statut = 'publié'
-        AND (a.{$title_field} LIKE :query OR a.{$resume_field} LIKE :query OR mc.mot_cle LIKE :query OR aut.nom LIKE :query)
+        WHERE a.statut IN ('publié', 'accepté')
+        AND (LOWER(a.{$title_field}) LIKE LOWER(:query) OR LOWER(a.{$resume_field}) LIKE LOWER(:query) OR LOWER(mc.mot_cle) LIKE LOWER(:query) OR LOWER(aut.nom) LIKE LOWER(:query))
         ORDER BY a.date_publication DESC
     ";
     $stmt = $pdo->prepare($sql);
@@ -34,7 +34,11 @@ try {
         foreach ($articles as $article) {
             echo '<article class="list-item">';
             echo '<h3>' . htmlspecialchars($article['titre']) . '</h3>';
-            echo '<p class="author-date">Par ' . htmlspecialchars($article['auteur_nom']) . ' - ' . (new DateTime($article['date_publication']))->format('d/m/Y') . '</p>';
+            echo '<p class="author-date">Par ' . htmlspecialchars($article['auteur_nom']);
+            if ($article['date_publication']) {
+                echo ' - ' . (new DateTime($article['date_publication']))->format('d/m/Y');
+            }
+            echo '</p>';
             echo '<p>' . htmlspecialchars(substr($article['resume'], 0, 200)) . '...</p>';
             echo '<a href="article.php?id=' . $article['id_article'] . '" class="read-more">Lire la suite</a>';
             echo '</article>';

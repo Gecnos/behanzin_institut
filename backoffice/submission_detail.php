@@ -51,10 +51,13 @@ try {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
-    <header>
+<body class="backoffice-body">
+    <header class="backoffice-header">
         <h1>Détail de la soumission</h1>
-        <nav><a href="index.php"><i class="fa-solid fa-arrow-left"></i> Retour aux soumissions</a></nav>
+        <nav>
+            <a href="index.php"><i class="fa-solid fa-arrow-left"></i> Retour aux soumissions</a>
+            <a href="categories.php"><i class="fa-solid fa-tags"></i> Catégories</a>
+        </nav>
     </header>
 
     <main id="admin-content">
@@ -69,7 +72,7 @@ try {
                 </div>
                 <div class="form-group">
                     <label for="titre_en">Titre (Anglais)</label>
-                    <input type="text" name="titre_en" id="titre_en" value="<?= htmlspecialchars($article['titre_en']) ?>">
+                    <input type="text" name="titre_en" id="titre_en" value="<?= htmlspecialchars($article['titre_en'] ?? '') ?>">
                 </div>
                 
                 <p><strong>Auteur:</strong> <?= htmlspecialchars($article['prenom'] . ' ' . $article['nom']) ?></p>
@@ -82,7 +85,7 @@ try {
                 </div>
                 <div class="form-group">
                     <label for="resume_en">Résumé (Anglais)</label>
-                    <textarea name="resume_en" id="resume_en" rows="10"><?= htmlspecialchars($article['resume_en']) ?></textarea>
+                    <textarea name="resume_en" id="resume_en" rows="10"><?= htmlspecialchars($article['resume_en'] ?? '') ?></textarea>
                 </div>
 
                 <div class="form-group">

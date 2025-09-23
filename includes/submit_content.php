@@ -50,6 +50,11 @@
             <input type="file" id="manuscript" name="manuscript" accept=".pdf,.doc,.docx" required>
         </div>
 
+        <div class="form-group">
+            <label for="article_image">Image de l'article (JPEG, PNG)</label>
+            <input type="file" id="article_image" name="article_image" accept=".jpg,.jpeg,.png" required>
+        </div>
+
         <button type="submit" id="submit-btn"><i class="fa-solid fa-paper-plane"></i> Soumettre</button>
     </form>
 </section>

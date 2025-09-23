@@ -6,10 +6,17 @@ header('Content-Type: application/json');
 $response = ['success' => false, 'message' => 'Une erreur est survenue.'];
 
 // --- Validation des données --- //
+// Check if POST data is even received
+if (empty($_POST)) {
+    $response['message'] = "Aucune donnée POST reçue. Vérifiez la taille du fichier ou la configuration du serveur.";
+    echo json_encode($response);
+    exit;
+}
+
 $required_fields = ['title', 'resume', 'keywords', 'author_name', 'author_firstname', 'author_email', 'author_institution', 'author_phone'];
 foreach ($required_fields as $field) {
-    if (empty($_POST[$field])) {
-        $response['message'] = "Le champ '{$field}' est obligatoire.";
+    if (!isset($_POST[$field]) || $_POST[$field] === '') { // Use !isset or empty string check
+        $response['message'] = "Le champ '{$field}' est obligatoire et ne peut être vide.";
         echo json_encode($response);
         exit;
     }
@@ -46,7 +53,60 @@ if (isset($_FILES['manuscript']) && $_FILES['manuscript']['error'] == 0) {
         exit;
     }
 } else {
-    $response['message'] = "Le fichier du manuscrit est manquant ou corrompu.";
+    // More specific error messages for file upload
+    switch ($_FILES['manuscript']['error']) {
+        case UPLOAD_ERR_INI_SIZE:
+            $response['message'] = "Le fichier est trop volumineux (dépasse upload_max_filesize).";
+            break;
+        case UPLOAD_ERR_FORM_SIZE:
+            $response['message'] = "Le fichier est trop volumineux (dépasse MAX_FILE_SIZE).";
+            break;
+        case UPLOAD_ERR_PARTIAL:
+            $response['message'] = "Le fichier n'a été que partiellement téléversé.";
+            break;
+        case UPLOAD_ERR_NO_FILE:
+            $response['message'] = "Aucun fichier n'a été téléversé.";
+            break;
+        case UPLOAD_ERR_NO_TMP_DIR:
+            $response['message'] = "Dossier temporaire manquant sur le serveur.";
+            break;
+        case UPLOAD_ERR_CANT_WRITE:
+            $response['message'] = "Échec de l'écriture du fichier sur le disque.";
+            break;
+        case UPLOAD_ERR_EXTENSION:
+            $response['message'] = "Une extension PHP a arrêté le téléversement du fichier.";
+            break;
+        default:
+            $response['message'] = "Erreur inconnue lors du téléversement du fichier.";
+            break;
+    }
+    echo json_encode($response);
+    exit;
+}
+
+// --- Gestion de l'image de l'article --- //
+$image_path = null;
+if (isset($_FILES['article_image']) && $_FILES['article_image']['error'] == 0) {
+    $allowed_image_extensions = ['jpg', 'jpeg', 'png'];
+    $image_extension = strtolower(pathinfo($_FILES['article_image']['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($image_extension, $allowed_image_extensions)) {
+        $response['message'] = "Format d'image non autorisé. Uniquement JPG, JPEG, PNG.";
+        echo json_encode($response);
+        exit;
+    }
+
+    $image_name = uniqid('article_img_', true) . '.' . $image_extension;
+    $image_upload_path = $upload_dir . $image_name;
+
+    if (!move_uploaded_file($_FILES['article_image']['tmp_name'], $image_upload_path)) {
+        $response['message'] = "Erreur lors du téléversement de l'image.";
+        echo json_encode($response);
+        exit;
+    }
+    $image_path = $image_upload_path;
+} else {
+    $response['message'] = "L'image de l'article est obligatoire.";
     echo json_encode($response);
     exit;
 }
@@ -76,12 +136,13 @@ try {
 
     // 2. Insérer l'article
     $stmt = $pdo->prepare(
-        "INSERT INTO Articles (titre, resume, fichier_manuscrit, statut, date_soumission, id_auteur) VALUES (:titre, :resume, :fichier, 'en attente', NOW(), :id_auteur)"
+        "INSERT INTO Articles (titre, resume, fichier_manuscrit, image, statut, date_soumission, id_auteur) VALUES (:titre, :resume, :fichier, :image, 'en attente', NOW(), :id_auteur)"
     );
     $stmt->execute([
         ':titre' => $_POST['title'],
         ':resume' => $_POST['resume'],
         ':fichier' => $upload_path,
+        ':image' => $image_path,
         ':id_auteur' => $id_auteur
     ]);
     $id_article = $pdo->lastInsertId();

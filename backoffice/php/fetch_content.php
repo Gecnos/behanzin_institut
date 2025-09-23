@@ -1,19 +1,33 @@
 <?php
+require '../auth_check.php';
+require_role(['administrateur', 'editeur']);
+
 header('Content-Type: application/json');
 
-// TODO: Session check
+try {
+    $stmt = $pdo->query("SELECT cle, valeur FROM ContenuStatique");
+    $rows = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
 
-$about_path_fr = '../../includes/about_content.php';
-$contact_path_fr = '../../includes/contact_content.php';
-$about_path_en = '../../includes/about_content_en.php';
-$contact_path_en = '../../includes/contact_content_en.php';
+    // The frontend expects keys like 'about_content_fr'.
+    // The database has keys like 'aboutfr'.
+    // We need to map them.
+    $response = [
+        'about_content_fr'   => $rows['aboutfr'] ?? '',
+        'about_content_en'   => $rows['abouten'] ?? ''
+    ];
 
-$response = [
-    'about_content_fr' => file_exists($about_path_fr) ? file_get_contents($about_path_fr) : '',
-    'contact_content_fr' => file_exists($contact_path_fr) ? file_get_contents($contact_path_fr) : '',
-    'about_content_en' => file_exists($about_path_en) ? file_get_contents($about_path_en) : '',
-    'contact_content_en' => file_exists($contact_path_en) ? file_get_contents($contact_path_en) : ''
-];
+    echo json_encode($response);
 
-echo json_encode($response);
+} catch (PDOException $e) {
+    http_response_code(500);
+    error_log("Erreur fetch_content: " . $e->getMessage());
+    // In case the table doesn't exist yet, send an empty response
+    // to prevent breaking the frontend form.
+    echo json_encode([
+        'about_content_fr' => '',
+        'about_content_en' => '',
+        'contact_content_fr' => '',
+        'contact_content_en' => ''
+    ]);
+}
 ?>

@@ -1,10 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const mainContent = document.getElementById('main-content');
-    let currentLang = 'fr'; // Langue par défaut
-    let searchTimeout; // Pour la recherche en temps réel
+    let currentLang = 'fr';
+    let searchTimeout;
 
-    // --- Fonctions de base --- //
-
+    // --- Translation Functions --- //
     function applyTranslations(translations) {
         document.querySelectorAll('[data-lang-key]').forEach(element => {
             const key = element.dataset.langKey;
@@ -20,168 +19,105 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(translations => {
                 currentLang = lang;
                 applyTranslations(translations);
-                // Recharger le contenu de la page actuelle après changement de langue
                 const currentPage = mainContent.dataset.currentPage || 'accueil';
-                loadPage(currentPage);
+                const currentId = mainContent.dataset.currentId || '';
+                loadPage(currentPage, currentId ? `id=${currentId}` : '');
             })
-            .catch(error => console.error('Erreur de traduction:', error));
+            .catch(error => console.error('Translation Error:', error));
     }
 
-    // Fonction principale de chargement de page via AJAX
+    // --- Page Loading --- //
     function loadPage(page, params = '') {
-        let url = `php/load_page.php?page=${page}`;
-        const langParam = `lang=${currentLang}`;
-        url += params ? `&${params}&${langParam}` : `&${langParam}`;
-        
-        mainContent.dataset.currentPage = page; // Mettre à jour la page actuelle
+        mainContent.dataset.currentPage = page;
+        const searchParams = new URLSearchParams(params);
+        mainContent.dataset.currentId = searchParams.get('id') || '';
 
-        fetch(url)
+        fetch(`php/load_page.php?page=${page}&lang=${currentLang}&${params}`)
             .then(response => response.text())
             .then(html => {
                 mainContent.innerHTML = html;
-
-                // Exécuter la logique spécifique à la page chargée
                 if (page === 'accueil') {
-                    loadLatestArticles();
-                    loadFeaturedArticles();
+                    loadHomepageContent();
                 } else if (page === 'publications') {
-                    fetchFilteredArticles(); // Charger les articles au chargement de la page publications
-                    loadCategories(); // Charger les catégories
+                    fetchFilteredArticles();
+                    loadCategories();
                 }
             })
             .catch(error => {
-                console.error('Erreur lors du chargement de la page:', error);
-                mainContent.innerHTML = '<p>Erreur de chargement du contenu. Veuillez réessayer.</p>';
+                console.error('Page Load Error:', error);
+                mainContent.innerHTML = '<p>Erreur de chargement.</p>';
             });
     }
 
-    // --- Fonctions spécifiques aux pages --- //
-
-    function fetchFilteredArticles(query = '') {
-        const articlesList = document.getElementById('articles-list');
-        if (!articlesList) return; 
-
-        fetch(`php/fetch_filtered_articles.php?${query}&lang=${currentLang}`)
-            .then(response => response.text())
-            .then(html => {
-                articlesList.innerHTML = html;
-            })
-            .catch(error => console.error('Erreur de filtrage:', error));
+    function loadHomepageContent() {
+        fetchContent('featured_main', '.featured-main');
+        fetchContent('featured_side', '.featured-side');
+        fetchContent('latest_grid', '#latest-articles-container');
     }
 
+    function fetchContent(view, containerSelector) {
+        const container = document.querySelector(containerSelector);
+        if (!container) return;
+
+        fetch(`php/fetch_articles.php?view=${view}&lang=${currentLang}`)
+            .then(response => response.text())
+            .then(html => { container.innerHTML = html; })
+            .catch(error => console.error(`Error loading ${view}:`, error));
+    }
+
+    // --- Publications Page Specific Functions --- //
     function loadCategories() {
         const categorySelect = document.getElementById('category');
-        if(categorySelect) {
-            fetch('php/fetch_categories.php')
-                .then(response => response.text())
-                .then(html => categorySelect.innerHTML = html)
-                .catch(error => console.error('Erreur chargement catégories:', error));
-        }
-    }
-
-    function loadLatestArticles() {
-        const container = document.getElementById('latest-articles-container');
-        if (!container) return;
-
-        fetch(`php/fetch_articles.php?latest=true&lang=${currentLang}`)
+        if (!categorySelect) return;
+        fetch('php/fetch_categories.php')
             .then(response => response.text())
-            .then(html => {
-                container.innerHTML = html;
-            })
-            .catch(error => {
-                console.error('Erreur lors du chargement des derniers articles:', error);
-                container.innerHTML = '<p>Impossible de charger les derniers articles.</p>';
-            });
+            .then(html => { categorySelect.innerHTML = html; })
+            .catch(error => console.error('Category Load Error:', error));
     }
 
-    function loadFeaturedArticles() {
-        const container = document.getElementById('featured-articles-container');
-        if (!container) return;
-
-        fetch(`php/fetch_articles.php?featured=true&lang=${currentLang}`)
-            .then(response => response.text())
-            .then(html => {
-                container.innerHTML = html;
-            })
-            .catch(error => {
-                console.error('Erreur lors du chargement des articles phares:', error);
-                container.innerHTML = '<p>Impossible de charger les articles phares.</p>';
-            });
-    }
-
-    // --- Initialisation --- //
-
-    // Charger la page d'accueil et les traductions par défaut au démarrage
+    // --- Initialization --- //
     loadPage('accueil');
     loadTranslations(currentLang);
 
-    // --- Gestionnaires d'événements délégués (sur document.body) --- //
-
-    // Clics
+    // --- Event Listeners --- //
     document.body.addEventListener('click', function(e) {
-        // Navigation AJAX
-        if (e.target.tagName === 'A' && e.target.dataset.page) {
+        const link = e.target.closest('a');
+        const article = e.target.closest('article[data-page="article"]');
+
+        if (link && link.dataset.page) {
             e.preventDefault();
-            loadPage(e.target.dataset.page);
-        }
-        // Changement de langue
-        else if (e.target.closest('#lang-selector button')) {
+            loadPage(link.dataset.page);
+        } else if (article) {
+            e.preventDefault();
+            loadPage('article', `id=${article.dataset.id}`);
+        } else if (e.target.closest('#lang-selector button')) {
             const lang = e.target.dataset.lang;
-            if (lang && lang !== currentLang) {
-                loadTranslations(lang);
-            }
-        }
-        // Toggle des filtres avancés (page publications)
-        else if (e.target.id === 'toggle-advanced-filters') {
-            const advancedFilters = document.querySelector('.advanced-filters');
-            advancedFilters.classList.toggle('hidden');
-            if (advancedFilters.classList.contains('hidden')) {
-                e.target.innerHTML = '<i class="fa-solid fa-filter"></i> Filtres Avancés';
-            } else {
-                e.target.innerHTML = '<i class="fa-solid fa-filter-circle-xmark"></i> Masquer Filtres';
-            }
-        }
-        // Réinitialisation des filtres (page publications)
-        else if (e.target.id === 'reset-filters') {
-            const form = document.getElementById('filter-form');
+            if (lang && lang !== currentLang) loadTranslations(lang);
+        } else if (e.target.closest('#toggle-advanced-filters')) {
+            e.preventDefault();
+            document.getElementById('filter-form').classList.toggle('hidden');
+        } else if (e.target.closest('#simple-search-button')) {
+            e.preventDefault();
+            console.log('Simple search button clicked.');
             const searchInput = document.getElementById('publications-search-input');
-            if (form) form.reset();
-            if (searchInput) searchInput.value = '';
-            fetchFilteredArticles();
+            const query = `query=${encodeURIComponent(searchInput.value)}`;
+            console.log('Fetching articles with query:', query);
+            fetchFilteredArticles(query);
         }
     });
 
-    // Soumissions de formulaires
     document.body.addEventListener('submit', function(e) {
-        // Soumission de la barre de recherche générale
-        if (e.target.id === 'general-search-form') {
+        if (e.target.id === 'filter-form') {
             e.preventDefault();
-            const query = e.target.querySelector('input[name="query"]').value;
-            if (query) {
-                loadPage('search_results', `query=${encodeURIComponent(query)}`);
-            }
-        }
-        // Soumission du formulaire de filtres avancés (page publications)
-        else if (e.target.id === 'filter-form') {
-            e.preventDefault();
-            const form = e.target;
-            const searchInput = document.getElementById('publications-search-input');
-            const formData = new FormData(form);
-            if (searchInput) formData.append('query', searchInput.value);
+            const formData = new FormData(e.target);
             const query = new URLSearchParams(formData).toString();
             fetchFilteredArticles(query);
-        }
-        // Soumission du formulaire de soumission d'article
-        else if (e.target.id === 'submission-form') {
+        } else if (e.target.id === 'submission-form') {
             e.preventDefault();
             const form = e.target;
-            const responseDiv = document.getElementById('form-response');
-            const submitBtn = document.getElementById('submit-btn');
-            
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Envoi en cours...';
-
             const formData = new FormData(form);
+            const formResponse = document.getElementById('form-response');
+            formResponse.innerHTML = ''; // Clear previous messages
 
             fetch('php/handle_submission.php', {
                 method: 'POST',
@@ -189,36 +125,40 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                responseDiv.className = data.success ? 'response success' : 'response error';
-                responseDiv.textContent = data.message;
                 if (data.success) {
-                    form.reset();
+                    formResponse.innerHTML = '<p class="success-message">' + data.message + '</p>';
+                    form.reset(); // Clear the form
+                } else {
+                    formResponse.innerHTML = '<p class="error-message">' + data.message + '</p>';
                 }
             })
             .catch(error => {
-                responseDiv.className = 'response error';
-                responseDiv.textContent = 'Une erreur technique est survenue. Veuillez réessayer.';
-                console.error('Erreur de soumission:', error);
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Soumettre';
+                console.error('Error during submission:', error);
+                formResponse.innerHTML = '<p class="error-message">Une erreur inattendue est survenue.</p>';
             });
         }
     });
 
-    // Inputs (pour la recherche en temps réel)
-    document.body.addEventListener('input', function(e) {
-        if (e.target.id === 'publications-search-input') {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                const form = document.getElementById('filter-form');
-                const searchInput = e.target;
-                const formData = new FormData(form);
-                if (searchInput) formData.append('query', searchInput.value);
-                const query = new URLSearchParams(formData).toString();
-                fetchFilteredArticles(query);
-            }, 300);
+    function fetchFilteredArticles(query = '') {
+        const articlesList = document.getElementById('articles-list');
+        if (!articlesList) {
+            console.log('articles-list element not found.');
+            return;
         }
-    });
+
+        console.log('fetchFilteredArticles called with query:', query);
+        fetch(`php/fetch_filtered_articles.php?${query}&lang=${currentLang}`)
+            .then(response => {
+                console.log('Fetch response received. Status:', response.status, response.statusText);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(html => {
+                console.log('HTML received:', html);
+                articlesList.innerHTML = html;
+            })
+            .catch(error => console.error('Filter Error:', error));
+    }
 });

@@ -1,53 +1,91 @@
 <?php
 require 'database.php';
 
+// --- Parameters ---
 $lang = $_GET['lang'] ?? 'fr';
-$title_field = ($lang === 'en') ? 'titre_en' : 'titre';
-$resume_field = ($lang === 'en') ? 'resume_en' : 'resume';
+$view = $_GET['view'] ?? 'latest_grid'; // default view
 
+// --- SQL & Rendering Logic based on View ---
+$title_field = ($lang === 'en') ? 'a.titre_en' : 'a.titre';
+$resume_field = ($lang === 'en') ? 'a.resume_en' : 'a.resume';
 $query_part = "";
-$limit = 20;
+$limit = 6;
 
-if (isset($_GET['latest'])) {
-    $query_part = " AND {$title_field} IS NOT NULL AND {$resume_field} IS NOT NULL";
-    $limit = 5;
-} elseif (isset($_GET['featured'])) {
-    $query_part = " AND est_en_avant = 1 AND {$title_field} IS NOT NULL AND {$resume_field} IS NOT NULL";
-    $limit = 3;
+switch ($view) {
+    case 'featured_main':
+        $query_part = " AND a.est_en_avant = 1";
+        $limit = 1;
+        break;
+    case 'featured_side':
+        $query_part = " AND a.est_en_avant = 0"; // Get non-featured articles
+        $limit = 3;
+        break;
+    case 'latest_grid':
+    default:
+        $limit = 6;
+        break;
 }
 
 try {
     $stmt = $pdo->prepare(
-        "SELECT id_article, {$title_field} AS titre, {$resume_field} AS resume, date_publication 
-         FROM Articles 
-         WHERE statut = 'accepté' {$query_part}
-         ORDER BY date_publication DESC 
+        "SELECT a.id_article, {$title_field} AS titre, {$resume_field} AS resume, a.image, a.date_publication, aut.nom, aut.prenom 
+         FROM Articles a
+         JOIN auteur aut ON a.id_auteur = aut.id_auteur
+         WHERE a.statut = 'accepté' AND {$title_field} IS NOT NULL AND {$title_field} != '' {$query_part}
+         ORDER BY a.date_publication DESC 
          LIMIT :limit"
     );
     $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();
-
     $articles = $stmt->fetchAll();
 
-    if ($articles) {
-        foreach ($articles as $article) {
-            echo '<article class="vignette">';
-            echo '<h4>' . htmlspecialchars($article['titre']) . '</h4>';
-            echo '<p>' . htmlspecialchars(substr($article['resume'], 0, 150)) . '...</p>';
-            if ($article['date_publication']) {
-                echo '<span class="date-pub">'. (new DateTime($article['date_publication']))->format('d/m/Y') .'</span>';
+    if (!$articles) {
+        echo '<p>' . ($view === 'latest_grid' ? 'Aucun article publié pour le moment.' : '') . '</p>';
+        exit;
+    }
+
+    // --- Render based on view ---
+    foreach ($articles as $article) {
+        $author_name = htmlspecialchars($article['prenom'] . ' ' . $article['nom']);
+        $article_title = htmlspecialchars($article['titre']);
+        $article_url = '#'; // Placeholder, will be handled by JS
+        $article_image = htmlspecialchars($article['image'] ?? '');
+
+        if ($view === 'featured_main') {
+            echo '<article class="vignette" data-page="article" data-id="' . $article['id_article'] . '">';
+            if ($article_image) {
+                echo '<img src="' . $article_image . '" alt="' . $article_title . '" class="vignette-image">';
             }
-            echo '<br><a href="article.php?id=' . $article['id_article'] . '">Lire la suite</a>';
+            echo '  <h2 class="vignette-title"><a>' . $article_title . '</a></h2>';
+            echo '  <p>' . htmlspecialchars(substr($article['resume'], 0, 200)) . '...</p>';
+            echo '  <p class="vignette-author">' . $author_name . '</p>';
+            echo '</article>';
+        } elseif ($view === 'featured_side') {
+            echo '<article class="vignette" data-page="article" data-id="' . $article['id_article'] . '">';
+            if ($article_image) {
+                echo '<img src="' . $article_image . '" alt="' . $article_title . '" class="vignette-image-side">';
+            }
+            echo '  <h4 class="vignette-title"><a>' . $article_title . '</a></h4>';
+            echo '  <p class="vignette-author">' . $author_name . '</p>';
+            echo '</article>';
+        } else { // latest_grid
+            echo '<article class="vignette" data-page="article" data-id="' . $article['id_article'] . '">';
+            if ($article_image) {
+                echo '<img src="' . $article_image . '" alt="' . $article_title . '" class="vignette-image">';
+            }
+            echo '  <h4 class="vignette-title"><a>' . $article_title . '</a></h4>';
+            echo '  <p class="vignette-author">' . $author_name . '</p>';
+            if ($article['date_publication']) {
+                $date = (new DateTime($article['date_publication']))->format('d/m/Y');
+                echo '  <p class="vignette-date">' . $date . '</p>';
+            }
             echo '</article>';
         }
-    } else {
-        echo '<p>Aucun article publié pour le moment.</p>';
     }
 
 } catch (PDOException $e) {
     http_response_code(500);
-    echo "<p>Erreur lors de la récupération des articles.</p>";
-    // En développement, vous pourriez vouloir logguer l'erreur complète
-    // error_log($e->getMessage());
+    error_log("Fetch Articles Error: " . $e->getMessage());
+    // Silent fail for the homepage so it doesn't show a broken section
 }
 ?>

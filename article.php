@@ -28,42 +28,18 @@ try {
     die("Erreur: " . $e->getMessage());
 }
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title><?= htmlspecialchars($article['titre']) ?></title>
-    <meta name="description" content="<?= htmlspecialchars(substr($article['resume'], 0, 160)) ?>">
-    <!-- Open Graph tags -->
-    <meta property="og:title" content="<?= htmlspecialchars($article['titre']) ?>">
-    <meta property="og:description" content="<?= htmlspecialchars(substr($article['resume'], 0, 200)) ?>">
-    <meta property="og:type" content="article">
-    <!-- <meta property="og:image" content="URL_vers_une_image_representative"> -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <header>
-        <h1><a href="index.php">Behanzin Institut</a></h1>
-    </header>
+<article class="single-article-container">
+    <h1 class="article-title"><?= htmlspecialchars($article['titre']) ?></h1>
+    <p class="article-meta">Par <?= htmlspecialchars($article['prenom'] . ' ' . $article['nom']) ?><?php if ($article['date_publication']): ?> | Publié le <?= (new DateTime($article['date_publication']))->format('d/m/Y') ?><?php endif; ?></p>
+    
+    <div class="article-summary">
+        <h3>Résumé</h3>
+        <p><?= nl2br(htmlspecialchars($article['resume'])) ?></p>
+    </div>
 
-    <main>
-        <article class="full-article">
-            <h2><?= htmlspecialchars($article['titre']) ?></h2>
-            <p class="author-date">Par <?= htmlspecialchars($article['prenom'] . ' ' . $article['nom']) ?><?php if ($article['date_publication']): ?> | Publié le <?= (new DateTime($article['date_publication']))->format('d/m/Y') ?><?php endif; ?></p>
-            
-            <h3>Résumé</h3>
-            <p><?= nl2br(htmlspecialchars($article['resume'])) ?></p>
-
-            <h3>Article Complet</h3>
-            <a href="download.php?id=<?= $article['id_article'] ?>" class="btn"><i class="fa-solid fa-download"></i> Télécharger le PDF</a>
-            
-            <!-- On pourrait aussi intégrer un viewer PDF ici -->
-
-        </article>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 Behanzin Institut. Tous droits réservés.</p>
-    </footer>
-</body>
-</html>
+    <div class="article-full-content">
+        <h3>Article Complet</h3>
+        <a href="download.php?id=<?= $article['id_article'] ?>" class="btn btn-download"><i class="fa-solid fa-download"></i> Télécharger le PDF</a>
+        <!-- On pourrait aussi intégrer un viewer PDF ici -->
+    </div>
+</article>
