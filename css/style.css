@@ -3,13 +3,13 @@
 /* --- Variables --- */
 :root {
     --font-primary: 'Montserrat', sans-serif;
-    --color-background: #ffffff;
-    --color-surface: #f8f9fa; /* Lighter background for cards/headers */
-    --color-text-primary: #000000;
-    --color-text-secondary: #6c757d; /* For metadata, subtitles */
-    --color-accent: #000000;
-    --color-accent-dark: #343a40;
-    --color-border: #dee2e6;
+    --color-background: #0a101e;
+    --color-surface: #1c2538; /* Lighter background for cards/headers */
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #adb5bd; /* For metadata, subtitles */
+    --color-accent: #007bff;
+    --color-accent-dark: #0056b3;
+    --color-border: #343a40;
 }
 
 /* --- Global Styles --- */
@@ -372,18 +372,18 @@ button[type="submit"]:hover, .btn:hover, .btn-action:hover {
 }
 
 .success-message {
-    color: #000000;
-    background-color: #e9ecef;
-    border: 1px solid #dee2e6;
+    color: #28a745; /* Green for success */
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
     padding: 1rem;
     border-radius: 4px;
     margin-bottom: 1rem;
 }
 
 .error-message {
-    color: #000000;
-    background-color: #e9ecef;
-    border: 1px solid #dee2e6;
+    color: #dc3545; /* Red for error */
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
     padding: 1rem;
     border-radius: 4px;
     margin-bottom: 1rem;
