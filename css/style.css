@@ -3,13 +3,13 @@
 /* --- Variables --- */
 :root {
     --font-primary: 'Montserrat', sans-serif;
-    --color-background: #0a101e;
-    --color-surface: #1c2538; /* Lighter background for cards/headers */
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #adb5bd; /* For metadata, subtitles */
-    --color-accent: #007bff;
-    --color-accent-dark: #0056b3;
-    --color-border: #343a40;
+    --color-background: #ffffff;
+    --color-surface: #f8f9fa; /* Lighter background for cards/headers */
+    --color-text-primary: #000000;
+    --color-text-secondary: #6c757d; /* For metadata, subtitles */
+    --color-accent: #000000;
+    --color-accent-dark: #343a40;
+    --color-border: #dee2e6;
 }
 
 /* --- Global Styles --- */
@@ -175,12 +175,30 @@ main {
 
 /* --- Article Cards (Vignettes) --- */
 .vignette {
+    /* Mise à jour pour les vignettes standard (bas droit) pour l'image au-dessus */
     background-color: transparent;
     border: 1px solid var(--color-border);
     border-radius: 4px;
-    padding: 1.5rem;
+    padding: 0; /* Important: enlève le padding pour que l'image touche les coins */
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+}
+
+.vignette .article-image {
+    width: 100%;
+    height: 180px; /* Hauteur fixe pour l'image (articles bas droite) */
+    overflow: hidden;
+}
+.vignette .article-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.vignette-content {
+    padding: 1rem;
 }
 
 .vignette-title {
@@ -197,6 +215,74 @@ main {
     color: var(--color-text-secondary);
     font-size: 0.9rem;
 }
+
+
+/* --- Styles AJOUTÉS pour la mise en page de la photo --- */
+
+/* 1. Grand article de gauche (image pleine page avec texte en overlay) */
+.article-main {
+    position: relative;
+    overflow: hidden;
+    height: 100%; /* Important pour qu'il remplisse l'espace de deux lignes */
+    /* Ces styles sont appliqués au :first-child dans #latest-articles-container */
+}
+
+.article-main .article-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Texte en superposition */
+.article-main-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    color: white; 
+    /* Dégradé pour la lisibilité du texte */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+}
+
+.article-main-overlay .vignette-title {
+    font-size: 1.8rem;
+    color: white;
+    margin: 0;
+}
+
+/* 2. Articles de la grille de droite avec image latérale (haut droit) */
+.vignette-side {
+    display: flex; /* Met l'image et le contenu sur la même ligne */
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--color-background);
+}
+
+.vignette-side .article-image {
+    flex: 0 0 40%; /* L'image prend 40% de la largeur du conteneur */
+    height: auto;
+}
+
+.vignette-side .article-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.vignette-side .vignette-content {
+    padding: 1rem;
+    flex-grow: 1;
+}
+
+.vignette-side .vignette-title {
+    /* Réduit un peu la taille du titre pour ce format */
+    font-size: 1.1rem;
+    margin: 0;
+}
+
 
 /* --- Homepage Layout --- */
 .home-section > h3 {
@@ -229,11 +315,25 @@ main {
     border-radius: 0;
 }
 
+/* --- MODIFICATION CRUCIALE pour la mise en page de la photo --- */
 #latest-articles-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    /* Crée 2 colonnes : la première 1.5 fois plus large que la seconde */
+    grid-template-columns: 1.5fr 1fr;
+    gap: 1.5rem; /* Espace entre les articles */
+    /* Assure que les éléments suivants s'insèrent correctement pour former la grille 2x2 */
+    grid-auto-rows: minmax(min-content, auto);
 }
+
+/* Appliquez les styles pour que le premier article s'étende sur deux lignes */
+#latest-articles-container > :first-child {
+    grid-row: span 2;
+    /* Enlève les bordures/padding de la classe .vignette de base si elle est appliquée */
+    border: none !important; 
+    padding: 0 !important;
+}
+/* --- FIN DE LA MODIFICATION CRUCIALE --- */
+
 
 /* --- Publications Page --- */
 .search-filter-container {
@@ -372,18 +472,18 @@ button[type="submit"]:hover, .btn:hover, .btn-action:hover {
 }
 
 .success-message {
-    color: #28a745; /* Green for success */
-    background-color: #d4edda;
-    border: 1px solid #c3e6cb;
+    color: #000000;
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
     padding: 1rem;
     border-radius: 4px;
     margin-bottom: 1rem;
 }
 
 .error-message {
-    color: #dc3545; /* Red for error */
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
+    color: #000000;
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
     padding: 1rem;
     border-radius: 4px;
     margin-bottom: 1rem;
@@ -498,3 +598,5 @@ button[type="submit"]:hover, .btn:hover, .btn-action:hover {
     flex-grow: 1;
     margin-top: 0;
 }
+
+/* --- Fin du code --- */
