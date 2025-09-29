@@ -32,10 +32,10 @@
             </div>
             <a href="#" data-page="soumettre" data-lang-key="submit">Soumettre un article</a>
             
-            <div id="lang-selector">
+            <!-- <div id="lang-selector">
                 <button data-lang="fr">FR</button>
                 <button data-lang="en">EN</button>
-            </div>
+            </div> -->
             
         </nav>
     </header>

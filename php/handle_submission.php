@@ -87,11 +87,12 @@ if (isset($_FILES['manuscript']) && $_FILES['manuscript']['error'] == 0) {
 // --- Gestion de l'image de l'article --- //
 $image_path = null;
 if (isset($_FILES['article_image']) && $_FILES['article_image']['error'] == 0) {
-    $allowed_image_extensions = ['jpg', 'jpeg', 'png'];
+    // Expanded list of allowed image extensions
+    $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
     $image_extension = strtolower(pathinfo($_FILES['article_image']['name'], PATHINFO_EXTENSION));
 
     if (!in_array($image_extension, $allowed_image_extensions)) {
-        $response['message'] = "Format d'image non autorisé. Uniquement JPG, JPEG, PNG.";
+        $response['message'] = "Format d'image non autorisé. Formats acceptés : " . implode(', ', $allowed_image_extensions);
         echo json_encode($response);
         exit;
     }
@@ -99,17 +100,15 @@ if (isset($_FILES['article_image']) && $_FILES['article_image']['error'] == 0) {
     $image_name = uniqid('article_img_', true) . '.' . $image_extension;
     $image_upload_path = $upload_dir . $image_name;
 
-    if (!move_uploaded_file($_FILES['article_image']['tmp_name'], $image_upload_path)) {
-        $response['message'] = "Erreur lors du téléversement de l'image.";
-        echo json_encode($response);
-        exit;
+    if (move_uploaded_file($_FILES['article_image']['tmp_name'], $image_upload_path)) {
+        // Assign the path only on successful upload
+        $image_path = $image_upload_path;
+    } else {
+        // Optional: log error but don't halt submission for a failed image upload
+        error_log("Erreur lors du téléversement de l'image pour une soumission.");
     }
-    $image_path = $image_upload_path;
-} else {
-    $response['message'] = "L'image de l'article est obligatoire.";
-    echo json_encode($response);
-    exit;
 }
+// Note: The script no longer exits if an image is not provided, making it optional.
 
 // --- Insertion en base de données --- //
 $pdo->beginTransaction();

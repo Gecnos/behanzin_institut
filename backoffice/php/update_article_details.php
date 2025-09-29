@@ -12,13 +12,13 @@ if (!$article_id) {
     exit;
 }
 
-$titre_fr = htmlspecialchars_decode($data['titre_fr'] ?? '', ENT_QUOTES);
-$titre_en = htmlspecialchars_decode($data['titre_en'] ?? '', ENT_QUOTES);
-$resume_fr = htmlspecialchars_decode($data['resume_fr'] ?? '', ENT_QUOTES);
-$resume_en = htmlspecialchars_decode($data['resume_en'] ?? '', ENT_QUOTES);
+$titre_fr = (string) htmlspecialchars_decode($data['titre_fr'] ?? '', ENT_QUOTES);
+$titre_en = (string) htmlspecialchars_decode($data['titre_en'] ?? '', ENT_QUOTES);
+$resume_fr = (string) htmlspecialchars_decode($data['resume_fr'] ?? '', ENT_QUOTES);
+$resume_en = (string) htmlspecialchars_decode($data['resume_en'] ?? '', ENT_QUOTES);
 $keywords_str = $data['keywords'] ?? '';
 $categories = $data['categories'] ?? [];
-$est_en_avant = !empty($data['est_en_avant']);
+$est_en_avant = ($data['est_en_avant'] ?? false) ? 1 : 0;
 
 $pdo->beginTransaction();
 try {
