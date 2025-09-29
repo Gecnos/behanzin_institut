@@ -86,7 +86,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (link && link.dataset.page) {
             e.preventDefault();
-            loadPage(link.dataset.page);
+            let params = '';
+            if (link.dataset.id) {
+                params = `id=${link.dataset.id}`;
+            }
+            loadPage(link.dataset.page, params);
         } else if (article) {
             e.preventDefault();
             loadPage('article', `id=${article.dataset.id}`);

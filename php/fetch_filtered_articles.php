@@ -61,14 +61,14 @@ try {
     if ($articles) {
         foreach ($articles as $article) {
             echo '<article class="list-item">';
-            echo '<h3>' . htmlspecialchars($article['titre']) . '</h3>';
-            echo '<p class="author-date">Par ' . htmlspecialchars($article['auteur_nom']);
+            echo '<h3>' . htmlspecialchars($article['titre'] ?? 'Titre non disponible') . '</h3>';
+            echo '<p class="author-date">Par ' . htmlspecialchars($article['auteur_nom'] ?? 'Auteur inconnu');
             if ($article['date_publication']) {
                 echo ' - ' . (new DateTime($article['date_publication']))->format('d/m/Y');
             }
             echo '</p>';
-            echo '<p>' . htmlspecialchars($article['resume']) . '</p>';
-            echo '<a href="article.php?id=' . $article['id_article'] . '&lang=' . $lang . '" class="read-more">Lire la suite</a>';
+            echo '<p>' . htmlspecialchars($article['resume'] ?? '') . '</p>';
+            echo '<a href="#" data-page="article" data-id="' . $article['id_article'] . '" class="read-more">Lire la suite</a>';
             echo '</article>';
         }
     } else {

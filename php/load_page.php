@@ -48,6 +48,7 @@ $allowed_pages = [
 if (array_key_exists($page, $allowed_pages)) {
     $file_path = $allowed_pages[$page];
     if (file_exists($file_path)) {
+        define('IS_DYNAMIC_LOAD', true);
         include $file_path;
     } else {
         echo '<p>Contenu non trouvé.</p>';
