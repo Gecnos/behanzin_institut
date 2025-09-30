@@ -19,7 +19,7 @@ require_role(['administrateur', 'editeur', 'relecteur']);
             <a href="stats.php"><i class="fa-solid fa-chart-line"></i> Statistiques</a>
             <a href="users.php"><i class="fa-solid fa-users"></i> Utilisateurs</a>
             <a href="content.php"><i class="fa-solid fa-file-pen"></i> Contenu</a>
-            <a href="categories.php"><i class="fa-solid fa-tags"></i> Catégories</a>
+            <!-- <a href="categories.php"><i class="fa-solid fa-tags"></i> Catégories</a> -->
             <a href="../index.php" target="_blank"><i class="fa-solid fa-globe"></i> Voir le site</a>
             <a href="../php/logout.php"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a>
         </nav>

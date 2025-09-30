@@ -70,23 +70,23 @@ try {
                     <label for="titre">Titre (Français)</label>
                     <input type="text" name="titre_fr" id="titre_fr" value="<?= htmlspecialchars($article['titre']) ?>">
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="titre_en">Titre (Anglais)</label>
                     <input type="text" name="titre_en" id="titre_en" value="<?= htmlspecialchars($article['titre_en'] ?? '') ?>">
-                </div>
+                </div> -->
                 
                 <p><strong>Auteur:</strong> <?= htmlspecialchars($article['prenom'] . ' ' . $article['nom']) ?></p>
                 <p><strong>Statut actuel:</strong> <?= htmlspecialchars($article['statut']) ?></p>
-                <label><input type="checkbox" name="est_en_avant" <?= $article['est_en_avant'] ? 'checked' : '' ?>> Mettre en avant</label>
+                <!-- <label><input type="checkbox" name="est_en_avant" <?= $article['est_en_avant'] ? 'checked' : '' ?>> Mettre en avant</label> -->
 
                 <div class="form-group">
                     <label for="resume_fr">Résumé (Français)</label>
                     <textarea name="resume_fr" id="resume_fr" rows="10"><?= htmlspecialchars($article['resume']) ?></textarea>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="resume_en">Résumé (Anglais)</label>
                     <textarea name="resume_en" id="resume_en" rows="10"><?= htmlspecialchars($article['resume_en'] ?? '') ?></textarea>
-                </div>
+                </div> -->
 
                 <div class="form-group">
                     <label for="keywords">Mots-clés (séparés par virgule)</label>

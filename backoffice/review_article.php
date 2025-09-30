@@ -23,7 +23,7 @@ $stmt->execute(['id' => $article_id, 'user_id' => $_SESSION['user_id']]);
 $article = $stmt->fetch();
 
 ?>
-    $stmt->execute(['id' => $article_id, 'user_id' => $_SESSION['user_id']]);
+    <!-- $stmt->execute(['id' => $article_id, 'user_id' => $_SESSION['user_id']]);
     $article = $stmt->fetch();
 
     // Récupérer les catégories de l'article
@@ -34,7 +34,7 @@ $article = $stmt->fetch();
     // Récupérer toutes les catégories disponibles
     $all_categories = $pdo->query("SELECT id_categorie, nom FROM categories ORDER BY nom")->fetchAll();
 
-?>
+?> -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
